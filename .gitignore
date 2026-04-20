@@ -1,0 +1,33 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+
+# Dependencies
+/node_modules
+
+# IDEs
+.idea/
+.vscode/
+.project
+.classpath
+*.launch
+.settings/
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Angular cache
+.angular/cache
