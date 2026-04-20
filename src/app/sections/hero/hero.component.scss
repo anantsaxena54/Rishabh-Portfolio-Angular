@@ -5,15 +5,23 @@
 .hero {
   min-height: 100vh;
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-end;
   padding: 7rem 2.5rem 3rem;
   overflow: hidden;
 }
-.hero-canvas {
+
+.hero-bg {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+  transform: scale(0.82);
+  transform-origin: center top;
+  z-index: 0;
 }
 
 .hero-overlay {
@@ -24,13 +32,6 @@
       rgba(10, 9, 8, 0.3) 0%,
       rgba(10, 9, 8, 0.1) 40%,
       rgba(10, 9, 8, 0.9) 100%);
-  pointer-events: none;
-}
-
-.hero-3d {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
   pointer-events: none;
 }
 
@@ -49,7 +50,7 @@
   margin-bottom: 4rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  color: var(--dim);
+  color: #ffffff;
   letter-spacing: 0.4em;
   text-transform: uppercase;
 
