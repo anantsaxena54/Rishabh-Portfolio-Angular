@@ -111,18 +111,30 @@ export const EXPERIENCES: readonly Experience[] = [
 // Work / Projects
 // ==========================================================
 export const PROJECTS: readonly Project[] = [
-  { title: 'Ocean', cat: 'cine', brand: 'Virat Kohli × One8', img: svgThumb('%23d4472a', '%23e0a96d', 'lens') },
-  { title: 'Tungsten', cat: 'cine', brand: 'HDFC Bank', img: svgThumb('%23e0a96d', '%23d4472a', 'frame') },
-  { title: 'Static & Noise', cat: 'edit', brand: 'Livguard', img: svgThumb('%23d4472a', '%23f5efe6', 'bars') },
-  { title: 'Monsoon Reel', cat: 'cine', brand: 'Kotak Mahindra', img: svgThumb('%23e0a96d', '%238a857c', 'wave') },
-  { title: 'Paper City', cat: 'vfx', brand: 'Bajaj Allianz', img: svgThumb('%23d4472a', '%23e0a96d', 'grid') },
-  { title: 'Afterglow', cat: 'ai', brand: 'Raymond', img: svgThumb('%23e0a96d', '%23d4472a', 'blur') },
-  { title: 'Night Shift', cat: 'cine', brand: 'Tata Motors', img: svgThumb('%23f5efe6', '%23d4472a', 'strip') },
-  { title: 'Pulse', cat: 'edit', brand: 'Nykaa', img: svgThumb('%23d4472a', '%23e0a96d', 'wave') },
-  { title: 'Concrete Light', cat: 'vfx', brand: 'Godrej', img: svgThumb('%23e0a96d', '%23d4472a', 'lens') },
-  { title: 'Loop the Real', cat: 'ai', brand: 'Asian Paints', img: svgThumb('%23d4472a', '%23f5efe6', 'frame') },
-  { title: 'Saffron', cat: 'cine', brand: 'Titan', img: svgThumb('%23e0a96d', '%23d4472a', 'blur') },
-  { title: 'Cutaway', cat: 'edit', brand: 'Marico', img: svgThumb('%23d4472a', '%23e0a96d', 'bars') },
+  // Cinematography (5)
+  { title: 'Ocean',          cat: 'cine', brand: 'Virat Kohli × One8', img: svgThumb('%23d4472a', '%23e0a96d', 'lens') },
+  { title: 'Tungsten',       cat: 'cine', brand: 'HDFC Bank',          img: svgThumb('%23e0a96d', '%23d4472a', 'frame') },
+  { title: 'Monsoon Reel',   cat: 'cine', brand: 'Kotak Mahindra',     img: svgThumb('%23e0a96d', '%238a857c', 'wave') },
+  { title: 'Night Shift',    cat: 'cine', brand: 'Tata Motors',        img: svgThumb('%23f5efe6', '%23d4472a', 'strip') },
+  { title: 'Saffron',        cat: 'cine', brand: 'Titan',              img: svgThumb('%23e0a96d', '%23d4472a', 'blur') },
+
+  // Editing (5)
+  { title: 'Static & Noise', cat: 'edit', brand: 'Livguard',           img: svgThumb('%23d4472a', '%23f5efe6', 'bars') },
+  { title: 'Pulse',          cat: 'edit', brand: 'Nykaa',              img: svgThumb('%23d4472a', '%23e0a96d', 'wave') },
+  { title: 'Cutaway',        cat: 'edit', brand: 'Marico',             img: svgThumb('%23d4472a', '%23e0a96d', 'bars') },
+  { title: 'Crosshatch',     cat: 'edit', brand: 'Dream11',            img: svgThumb('%23e0a96d', '%23f5efe6', 'grid') },
+  { title: 'Intermission',   cat: 'edit', brand: 'Myntra',             img: svgThumb('%23d4472a', '%238a857c', 'strip') },
+
+  // VFX (5)
+  { title: 'Paper City',     cat: 'vfx',  brand: 'Bajaj Allianz',      img: svgThumb('%23d4472a', '%23e0a96d', 'grid') },
+  { title: 'Concrete Light', cat: 'vfx',  brand: 'Godrej',             img: svgThumb('%23e0a96d', '%23d4472a', 'lens') },
+  { title: 'Glass House',    cat: 'vfx',  brand: 'Mahindra',           img: svgThumb('%23f5efe6', '%23e0a96d', 'frame') },
+  { title: 'Aether',         cat: 'vfx',  brand: 'Royal Enfield',      img: svgThumb('%238a857c', '%23d4472a', 'blur') },
+  { title: 'Split Beam',     cat: 'vfx',  brand: 'boAt',               img: svgThumb('%23d4472a', '%23f5efe6', 'wave') },
+
+  // AI Integrations (2)
+  { title: 'Afterglow',      cat: 'ai',   brand: 'Raymond',            img: svgThumb('%23e0a96d', '%23d4472a', 'blur') },
+  { title: 'Loop the Real',  cat: 'ai',   brand: 'Asian Paints',       img: svgThumb('%23d4472a', '%23f5efe6', 'frame') },
 ];
 
 export const FILTERS: readonly Filter[] = [

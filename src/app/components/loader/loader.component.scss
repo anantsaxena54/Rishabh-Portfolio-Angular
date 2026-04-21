@@ -52,25 +52,6 @@
   mix-blend-mode: overlay;
 }
 
-.flash {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.85), rgba(255,255,255,0) 60%);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 5;
-
-  &.fire {
-    animation: flashBurst 0.35s ease-out forwards;
-  }
-}
-
-@keyframes flashBurst {
-  0%   { opacity: 0; }
-  25%  { opacity: 0.95; }
-  100% { opacity: 0; }
-}
-
 /* ========= Top slate bar ========= */
 .slate-bar {
   position: relative;
@@ -159,16 +140,20 @@
   position: relative;
   width: var(--board-w);
   perspective: 1200px;
-  opacity: 0;
-  transform: translateY(20px) scale(0.92);
-  animation: boardIn 0.9s 0.2s var(--ease) forwards;
-  transform-origin: center bottom;
+  animation: boardIn 0.9s 0.2s var(--ease) both;
+  transform-origin: center center;
 
   &.clap {
     animation:
-      boardIn 0.9s 0.2s var(--ease) forwards,
-      boardShake 0.35s 2s ease-out;
+      boardShake 0.4s ease-out,
+      boardClose 0.7s 0.45s cubic-bezier(0.7, 0, 0.3, 1) forwards;
   }
+}
+
+@keyframes boardClose {
+  0%   { transform: translateY(0) scale(1) rotate(0); filter: blur(0); opacity: 1; }
+  40%  { transform: translateY(-4px) scale(1.08) rotate(-1deg); filter: blur(0); opacity: 1; }
+  100% { transform: translateY(-40px) scale(0.6) rotate(2deg); filter: blur(8px); opacity: 0; }
 }
 
 @keyframes boardIn {
@@ -189,28 +174,28 @@
 .clapper-arm {
   position: relative;
   height: 56px;
-  margin-bottom: -4px;
-  transform-origin: left bottom;
-  transform: rotate(-22deg);
+  margin-bottom: -6px;
+  transform-origin: 12px 100%;
+  transform: rotate(-28deg);
   animation: armHold 2s var(--ease) forwards;
   z-index: 2;
 }
 
 .clapper.clap .clapper-arm {
-  animation:
-    armHold 2s var(--ease) forwards,
-    armClap 0.28s 2s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+  animation: armClap 0.45s cubic-bezier(0.75, 0, 0.2, 1) forwards;
 }
 
 @keyframes armHold {
-  from { transform: rotate(-28deg); }
-  to   { transform: rotate(-22deg); }
+  0%   { transform: rotate(-34deg); }
+  60%  { transform: rotate(-26deg); }
+  100% { transform: rotate(-28deg); }
 }
 
 @keyframes armClap {
-  0%   { transform: rotate(-22deg); }
-  60%  { transform: rotate(1deg); }
-  80%  { transform: rotate(-1.5deg); }
+  0%   { transform: rotate(-28deg); }
+  55%  { transform: rotate(4deg); }
+  72%  { transform: rotate(-2deg); }
+  88%  { transform: rotate(1deg); }
   100% { transform: rotate(0); }
 }
 

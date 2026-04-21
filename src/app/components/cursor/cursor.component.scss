@@ -5,7 +5,7 @@
   border-radius: 50%;
   background: var(--ink);
   pointer-events: none;
-  z-index: 10000;
+  z-index: 100000;
   margin-left: -4px;
   margin-top: -4px;
   transition:
@@ -25,7 +25,7 @@
   border-radius: 50%;
   border: 1px solid var(--ink);
   pointer-events: none;
-  z-index: 9999;
+  z-index: 99999;
   margin-left: -20px;
   margin-top: -20px;
   transition:
@@ -41,7 +41,7 @@
 .cursor-label {
   position: fixed;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 99999;
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.2em;

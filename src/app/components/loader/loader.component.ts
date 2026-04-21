@@ -8,7 +8,6 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, signal } 
     <div class="loader" [class.done]="done()" [class.clapping]="clapping()">
       <div class="loader-grain"></div>
       <div class="loader-scan"></div>
-      <div class="flash" [class.fire]="flash()"></div>
 
       <!-- Top slate bar -->
       <div class="slate-bar">
@@ -81,20 +80,6 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, signal } 
           </div>
         </div>
 
-        <!-- Reel progress -->
-        <div class="reel-progress">
-          <div class="reel-track">
-            <div class="reel-fill" [style.width.%]="pctNum()"></div>
-            <div class="reel-ticks">
-              @for (t of ticks; track $index) { <span></span> }
-            </div>
-          </div>
-          <div class="reel-meta">
-            <span>LOADING REEL</span>
-            <span class="tagline">Frames that linger — stories that cut.</span>
-            <span class="pct">{{ pct() }}%</span>
-          </div>
-        </div>
       </div>
 
       <!-- Film strip framing bottom -->
@@ -109,13 +94,9 @@ export class LoaderComponent implements AfterViewInit, OnDestroy {
   protected readonly armStripes = Array.from({ length: 12 });
   protected readonly bodyStripes = Array.from({ length: 12 });
   protected readonly perfs = Array.from({ length: 28 });
-  protected readonly ticks = Array.from({ length: 40 });
 
-  protected readonly pct = signal('00');
-  protected readonly pctNum = signal(0);
   protected readonly done = signal(false);
   protected readonly clapping = signal(false);
-  protected readonly flash = signal(false);
   protected readonly timecode = signal('00:00:00:00');
 
   protected readonly dateStr = (() => {
@@ -124,24 +105,11 @@ export class LoaderComponent implements AfterViewInit, OnDestroy {
     return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
   })();
 
-  private interval?: number;
   private tcInterval?: number;
   private timeout?: number;
   private clapTimeout?: number;
-  private flashTimeout?: number;
 
   ngAfterViewInit(): void {
-    let n = 0;
-    this.interval = window.setInterval(() => {
-      n += Math.random() * 8 + 2;
-      if (n >= 100) {
-        n = 100;
-        window.clearInterval(this.interval);
-      }
-      this.pct.set(String(Math.floor(n)).padStart(2, '0'));
-      this.pctNum.set(Math.floor(n));
-    }, 80);
-
     const start = Date.now();
     this.tcInterval = window.setInterval(() => {
       const ms = Date.now() - start;
@@ -154,17 +122,14 @@ export class LoaderComponent implements AfterViewInit, OnDestroy {
     }, 41);
 
     const showDone = () => {
-      // Clap! ~400ms before dismissing the loader
-      this.clapTimeout = window.setTimeout(() => {
-        this.clapping.set(true);
-        // flash fires at the exact moment of the clap
-        this.flashTimeout = window.setTimeout(() => this.flash.set(true), 260);
-      }, 2000);
+      // Clap! — the board's close animation is the loader's goodbye
+      this.clapTimeout = window.setTimeout(() => this.clapping.set(true), 2000);
 
+      // Dismiss after the clap + shake + close sequence resolves
       this.timeout = window.setTimeout(() => {
         this.done.set(true);
         window.dispatchEvent(new CustomEvent('loader:done'));
-      }, 2400);
+      }, 3150);
     };
 
     if (document.readyState === 'complete') showDone();
@@ -172,10 +137,8 @@ export class LoaderComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.interval) window.clearInterval(this.interval);
     if (this.tcInterval) window.clearInterval(this.tcInterval);
     if (this.timeout) window.clearTimeout(this.timeout);
     if (this.clapTimeout) window.clearTimeout(this.clapTimeout);
-    if (this.flashTimeout) window.clearTimeout(this.flashTimeout);
   }
 }

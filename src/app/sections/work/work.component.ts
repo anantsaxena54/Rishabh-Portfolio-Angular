@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, computed, inject, signal, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, NgZone, OnDestroy, computed, inject, signal, viewChild } from '@angular/core';
 import { CATEGORY_LABELS, FILTERS, PROJECTS } from '../../core/data/portfolio.data';
 import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.models';
 
@@ -32,7 +32,7 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
       <div class="gallery-wrap">
         <div #track class="gallery-track" [class.dragging]="dragging()">
           @for (project of visibleProjects(); track project.title; let i = $index) {
-            <div class="gallery-item" data-cursor="View">
+            <div class="gallery-item" data-cursor="View" (click)="openProject(project, i)">
               <div class="gallery-item-inner">
                 <div class="gallery-item-num">P — {{ paddedIndex(i) }}</div>
                 <div class="gallery-item-visual" [style.background-image]="'url(' + project.img + ')'"></div>
@@ -52,6 +52,53 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
 
       <div class="drag-hint">← Drag / scroll to explore →</div>
     </section>
+
+    @if (selected(); as project) {
+      <div class="project-modal" (click)="closeProject()">
+        <button class="modal-close" type="button" (click)="closeProject(); $event.stopPropagation()" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+
+        <div class="modal-player" (click)="$event.stopPropagation()">
+          <div class="player-glow"></div>
+
+          <div class="player-strip top">
+            @for (p of playerPerfs; track $index) { <span class="perf"></span> }
+          </div>
+
+          <div class="player-viewport">
+            <video
+              controls
+              autoplay
+              playsinline
+              [poster]="project.img"
+              src="assets/logos/studio-bg.MP4">
+            </video>
+
+            <div class="player-grain"></div>
+            <div class="player-vignette"></div>
+
+            <span class="bracket tl"></span>
+            <span class="bracket tr"></span>
+            <span class="bracket bl"></span>
+            <span class="bracket br"></span>
+
+            <div class="letterbox top"></div>
+            <div class="letterbox bottom"></div>
+
+            <div class="rec-badge">
+              <span class="rec-dot"></span>
+            </div>
+          </div>
+
+          <div class="player-strip bottom">
+            @for (p of playerPerfs; track $index) { <span class="perf"></span> }
+          </div>
+        </div>
+      </div>
+    }
   `,
   styleUrl: './work.component.scss',
 })
@@ -62,11 +109,41 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   protected readonly filters: readonly Filter[] = FILTERS;
   protected readonly activeFilter = signal<Filter['value']>('all');
   protected readonly dragging = signal(false);
+  protected readonly selected = signal<Project | null>(null);
+  protected readonly selectedIndex = signal(0);
+  protected readonly perfs = Array.from({ length: 24 });
+  protected readonly playerPerfs = Array.from({ length: 32 });
 
   protected readonly visibleProjects = computed<readonly Project[]>(() => {
     const f = this.activeFilter();
     return f === 'all' ? PROJECTS : PROJECTS.filter(p => p.cat === f);
   });
+
+  openProject(project: Project, index: number): void {
+    if (this.dragging()) return;
+    this.selected.set(project);
+    this.selectedIndex.set(index);
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeProject(): void {
+    this.selected.set(null);
+    document.body.style.overflow = '';
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.selected()) this.closeProject();
+  }
+
+  roleFor(cat: ProjectCategory): string {
+    switch (cat) {
+      case 'cine': return 'Cinematographer';
+      case 'edit': return 'Editor';
+      case 'vfx':  return 'VFX Artist';
+      case 'ai':   return 'AI Integration';
+    }
+  }
 
   private current = 0;
   private isDown = false;

@@ -38,11 +38,11 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, viewChil
               <span class="education-header">Education</span>
               <div class="hero-background">
                 <div class="bg-item">
-                  <span class="bg-label">Degree / 2020 — 2022</span>
+                  <span class="bg-label">2020 — 2022</span>
                   <div class="bg-title">Bachelor of arts in multimedia and mass communication — St. Andrew's College</div>
                 </div>
                 <div class="bg-item">
-                  <span class="bg-label">Training / 2019 — 2020</span>
+                  <span class="bg-label">2021 — 2022</span>
                   <div class="bg-title">Filmmaking Diploma — FX School</div>
                 </div>
               </div>
