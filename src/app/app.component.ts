@@ -7,7 +7,6 @@ import { HeroComponent } from './sections/hero/hero.component';
 import { SkillsComponent } from './sections/skills/skills.component';
 import { ExperienceComponent } from './sections/experience/experience.component';
 import { WorkComponent } from './sections/work/work.component';
-import { BrandsComponent } from './sections/brands/brands.component';
 import { ContactComponent } from './sections/contact/contact.component';
 
 @Component({
@@ -22,7 +21,6 @@ import { ContactComponent } from './sections/contact/contact.component';
     SkillsComponent,
     ExperienceComponent,
     WorkComponent,
-    BrandsComponent,
     ContactComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,7 +54,6 @@ import { ContactComponent } from './sections/contact/contact.component';
       <app-skills />
       <app-experience />
       <app-work />
-      <app-brands />
       <app-contact />
       <footer>
         <span>© 2026 Rishabh Sahu — Made in Mumbai</span>

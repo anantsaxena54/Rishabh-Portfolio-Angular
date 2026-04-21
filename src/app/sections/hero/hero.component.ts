@@ -6,15 +6,12 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, viewChil
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="hero" id="hero">
-      <img class="hero-bg" src="assets/logos/studio-bg.jpg" alt="" aria-hidden="true">
+      <video #heroVideo class="hero-bg" autoplay muted playsinline aria-hidden="true">
+        <source src="assets/logos/studio-bg.MP4" type="video/mp4">
+      </video>
       <div class="hero-overlay"></div>
 
       <div class="hero-content">
-        <div class="hero-kicker">
-          <span class="dot"></span>
-          <span>Reel / 2020 — 2026 / Mumbai, IN</span>
-        </div>
-
         <div class="hero-intro-script">
           <span #scriptLine>Hey I'm</span>
         </div>
@@ -65,12 +62,36 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, viewChil
   styleUrl: './hero.component.scss',
 })
 export class HeroComponent implements AfterViewInit {
+  private readonly heroVideo  = viewChild.required<ElementRef<HTMLVideoElement>>('heroVideo');
   private readonly line1      = viewChild.required<ElementRef<HTMLSpanElement>>('line1');
   private readonly line2      = viewChild.required<ElementRef<HTMLSpanElement>>('line2');
   private readonly scriptLine = viewChild.required<ElementRef<HTMLSpanElement>>('scriptLine');
   private readonly catchphrase= viewChild.required<ElementRef<HTMLParagraphElement>>('catchphrase');
 
   ngAfterViewInit(): void {
+    const video = this.heroVideo().nativeElement;
+    video.muted = true;
+    video.autoplay = false;
+    video.pause();
+    video.load();
+
+    let ready = false;
+    let loaderDone = false;
+
+    const startPlayback = () => {
+      if (!ready || !loaderDone) return;
+      video.currentTime = 0;
+      video.play().catch(() => { /* autoplay blocked */ });
+    };
+
+    if (video.readyState >= 2) {
+      ready = true;
+    } else {
+      video.addEventListener('loadeddata', () => { ready = true; startPlayback(); }, { once: true });
+    }
+
+    window.addEventListener('loader:done', () => { loaderDone = true; startPlayback(); }, { once: true });
+
     this.initTitleReveal();
   }
 

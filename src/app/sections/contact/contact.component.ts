@@ -81,7 +81,7 @@ interface Channel {
 
                 <div class="form-group">
                   <label>message</label>
-                  <textarea name="message" [(ngModel)]="formData.message" rows="5" placeholder="Tell me about the project..." required></textarea>
+                  <textarea name="message" [(ngModel)]="formData.message" rows="3" placeholder="Tell me about the project..." required></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn" [disabled]="!contactForm.valid">
