@@ -31,3 +31,4 @@ yarn-error.log*
 
 # Angular cache
 .angular/cache
+public/assets/logos/

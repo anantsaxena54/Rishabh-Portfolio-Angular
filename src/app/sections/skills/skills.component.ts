@@ -17,69 +17,72 @@ import { Skill } from '../../core/models/portfolio.models';
         <div class="section-num end">Six years<br>hands-on</div>
       </div>
 
-      <!-- Professional NLE Monitor (Preview Panel) -->
-      <div class="nle-monitor">
-        <div class="monitor-screen">
-          <div class="monitor-glass"></div>
-          <div class="monitor-overlay">
-            <div class="timecode">00:00:{{ activeSkill() ? (activeSkill()?.num?.split('/')?.[1]?.trim() ?? '00') : '00' }}:24</div>
-            <div class="rec-dot"></div>
-          </div>
-          
-          <div class="monitor-content" [class.active]="activeSkill()">
-            <div class="content-header">
-              <span class="type-tag">{{ activeSkill() ? 'Source' : 'No Signal' }}</span>
-              <h3 class="monitor-title">{{ activeSkill()?.title ?? 'Select a clip' }}</h3>
-            </div>
-            
-            <p class="monitor-desc">{{ activeSkill() ? activeSkill()?.desc : 'Hover over the timeline tracks to preview cinematic skills and specialized toolkits.' }}</p>
-            
-            <div class="monitor-footer">
-              <div class="monitor-tools" *ngIf="activeSkill()">
-                <div class="tool-label">Clip Toolkit:</div>
-                <span class="tool-tag" *ngFor="let t of activeSkill()?.tools">{{ t }}</span>
-              </div>
+      <div class="nle-layout">
+        <!-- Post-Production Timeline -->
+        <div class="nle-timeline" #timeline (mouseleave)="activeSkill.set(null)">
+          <!-- Playhead (Orange Line) spans ruler and tracks -->
+          <div class="playhead" #playhead></div>
 
-              <!-- Master Tools -->
-              <div class="master-tools">
-                <div class="tool-label">Master Gear:</div>
-                <div class="master-icons">
-                  <img *ngFor="let tool of displayTools" [src]="tool.icon" [alt]="tool.name" [title]="tool.name">
+          <div class="timeline-ruler">
+            <div class="ruler-mark" *ngFor="let i of [0,1,2,3,4,5,6,7,8,9]">
+              00:0{{i}}:00:00
+            </div>
+          </div>
+
+          <div class="timeline-ruler-spacer" style="height: 1px; background: rgba(245, 239, 230, 0.05);"></div>
+
+          <div class="timeline-tracks">
+            <div class="track-row" *ngFor="let track of tracks">
+              <div class="track-header">
+                <div class="track-id">{{ track.id }}</div>
+                <div class="track-controls">
+                  <span>M</span><span>S</span>
+                </div>
+              </div>
+              <div class="track-content">
+                <div class="clip" 
+                     *ngFor="let skill of track.skills"
+                     [class.active]="activeSkill() === skill"
+                     (mouseenter)="activeSkill.set(skill)">
+                  <div class="clip-inner">
+                    <div class="clip-label">{{ skill.title }}</div>
+                    <div class="clip-wave"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Post-Production Timeline -->
-      <div class="nle-timeline" #timeline (mouseleave)="activeSkill.set(null)">
-        <!-- Playhead (Orange Line) spans ruler and tracks -->
-        <div class="playhead" #playhead></div>
-
-        <div class="timeline-ruler">
-          <div class="ruler-mark" *ngFor="let i of [0,1,2,3,4,5,6,7,8,9]">
-            00:0{{i}}:00:00
-          </div>
-        </div>
-
-        <div class="timeline-tracks">
-
-          <div class="track-row" *ngFor="let track of tracks">
-            <div class="track-header">
-              <div class="track-id">{{ track.id }}</div>
-              <div class="track-controls">
-                <span>M</span><span>S</span>
-              </div>
+        <!-- Professional NLE Monitor (Preview Panel) -->
+        <div class="nle-monitor">
+          <div class="monitor-screen">
+            <div class="monitor-glass"></div>
+            <div class="monitor-overlay">
+              <div class="timecode">00:00:{{ activeSkill() ? (activeSkill()?.num?.split('/')?.[1]?.trim() ?? '00') : '00' }}:24</div>
+              <div class="rec-dot"></div>
             </div>
-            <div class="track-content">
-              <div class="clip" 
-                   *ngFor="let skill of track.skills"
-                   [class.active]="activeSkill() === skill"
-                   (mouseenter)="activeSkill.set(skill)">
-                <div class="clip-inner">
-                  <div class="clip-label">{{ skill.title }}</div>
-                  <div class="clip-wave"></div>
+            
+            <div class="monitor-content" [class.active]="activeSkill()">
+              <div class="content-header">
+                <span class="type-tag">{{ activeSkill() ? 'Source' : 'No Signal' }}</span>
+                <h3 class="monitor-title">{{ activeSkill()?.title ?? 'Select a clip' }}</h3>
+              </div>
+              
+              <p class="monitor-desc">{{ activeSkill() ? activeSkill()?.desc : 'Hover over the timeline tracks to preview cinematic skills and specialized toolkits.' }}</p>
+              
+              <div class="monitor-footer">
+                <div class="monitor-tools" *ngIf="activeSkill()">
+                  <div class="tool-label">Clip Toolkit:</div>
+                  <span class="tool-tag" *ngFor="let t of activeSkill()?.tools">{{ t }}</span>
+                </div>
+
+                <!-- Master Tools -->
+                <div class="master-tools">
+                  <div class="tool-label">Master Gear:</div>
+                  <div class="master-icons">
+                    <img *ngFor="let tool of displayTools" [src]="tool.icon" [alt]="tool.name" [title]="tool.name">
+                  </div>
                 </div>
               </div>
             </div>

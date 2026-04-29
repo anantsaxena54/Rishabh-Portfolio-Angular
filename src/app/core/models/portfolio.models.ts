@@ -5,6 +5,7 @@ export interface Project {
   readonly cat: ProjectCategory;
   readonly brand: string;
   readonly img: string;
+  readonly video?: string;
 }
 
 export interface Experience {

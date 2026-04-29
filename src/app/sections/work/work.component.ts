@@ -35,7 +35,7 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
             <div class="gallery-item" data-cursor="View" (click)="openProject(project, i)">
               <div class="gallery-item-inner">
                 <div class="gallery-item-num">P — {{ paddedIndex(i) }}</div>
-                <div class="gallery-item-visual" [style.background-image]="'url(' + project.img + ')'"></div>
+                <div class="gallery-item-visual" [style.background-image]="'url(&quot;' + project.img + '&quot;)'"></div>
                 <div class="gallery-item-shine"></div>
               </div>
               <div class="gallery-item-meta">
@@ -74,7 +74,7 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
               autoplay
               playsinline
               [poster]="project.img"
-              src="assets/logos/studio-bg.MP4">
+              [src]="project.video || 'assets/logos/studio-bg.mp4'">
             </video>
 
             <div class="player-grain"></div>

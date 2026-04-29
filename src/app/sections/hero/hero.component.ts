@@ -7,7 +7,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, viewChil
   template: `
     <section class="hero" id="hero">
       <video #heroVideo class="hero-bg" autoplay muted playsinline aria-hidden="true">
-        <source src="assets/logos/studio-bg.MP4" type="video/mp4">
+        <source src="assets/logos/studio-bg-final.mp4" type="video/mp4">
       </video>
       <div class="hero-overlay"></div>
 
@@ -90,7 +90,13 @@ export class HeroComponent implements AfterViewInit {
       video.addEventListener('loadeddata', () => { ready = true; startPlayback(); }, { once: true });
     }
 
-    window.addEventListener('loader:done', () => { loaderDone = true; startPlayback(); }, { once: true });
+    const loader = document.querySelector('app-loader .loader');
+    if (loader?.classList.contains('done')) {
+      loaderDone = true;
+      startPlayback();
+    } else {
+      window.addEventListener('loader:done', () => { loaderDone = true; startPlayback(); }, { once: true });
+    }
 
     this.initTitleReveal();
   }
