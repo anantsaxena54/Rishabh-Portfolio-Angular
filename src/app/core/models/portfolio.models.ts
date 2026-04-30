@@ -6,6 +6,7 @@ export interface Project {
   readonly brand: string;
   readonly img: string;
   readonly video?: string;
+  readonly imgPosition?: string;
 }
 
 export interface Experience {
