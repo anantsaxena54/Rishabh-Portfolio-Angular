@@ -74,9 +74,25 @@ nav {
 }
 
 @media (max-width: 900px) {
-  nav { padding: 1rem 1.25rem; }
-  .nav-logo { font-size: 1.05rem; }
-  .nav-links { gap: 1.2rem; }
+  nav { padding: 0.8rem 1.25rem; background: rgba(10, 9, 8, 0.95); }
+  .nav-logo { font-size: 1.2rem; }
+  .nav-links { 
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 70px !important;
+    background: #0a0908 !important; /* Solid background to ensure visibility */
+    border-top: 1px solid var(--line) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 0 1rem !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+  }
+  .nav-links a { font-size: 9px; padding: 10px 5px; }
   .nav-links a::before { display: none; }
   .nav-time { display: none; }
 }

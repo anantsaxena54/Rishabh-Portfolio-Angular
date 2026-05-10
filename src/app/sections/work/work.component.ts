@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, NgZone, OnDestroy, computed, inject, signal, viewChild } from '@angular/core';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { CATEGORY_LABELS, FILTERS, PROJECTS } from '../../core/data/portfolio.data';
 import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.models';
 
@@ -36,7 +37,7 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
               <div class="gallery-item-inner">
                 <div class="gallery-item-num">P — {{ paddedIndex(i) }}</div>
                 <div class="gallery-item-visual" 
-                     [style.background-image]="'url(&quot;' + project.img + '&quot;)'"
+                     [style.background-image]="bgImg(project.img)"
                      [style.background-position]="project.imgPosition || 'center'"></div>
                 <div class="gallery-item-shine"></div>
               </div>
@@ -76,7 +77,7 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
               autoplay
               playsinline
               [poster]="project.img"
-              [src]="project.video || 'assets/logos/studio-bg.mp4'">
+              [src]="project.video || '/assets/logos/studio-bg.mp4'">
             </video>
 
             <div class="player-grain"></div>
@@ -106,7 +107,12 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {
   private readonly zone = inject(NgZone);
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly track = viewChild.required<ElementRef<HTMLDivElement>>('track');
+
+  bgImg(url: string): SafeStyle {
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
+  }
 
   protected readonly filters: readonly Filter[] = FILTERS;
   protected readonly activeFilter = signal<Filter['value']>('all');

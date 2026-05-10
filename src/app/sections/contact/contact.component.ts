@@ -60,7 +60,7 @@ interface Channel {
           </div>
 
           <!-- Right Column: Form -->
-          <div class="contact-form-container">
+          <!-- <div class="contact-form-container">
             @if (!submitted()) {
               <form class="contact-form" (ngSubmit)="onSubmit()" #contactForm="ngForm">
                 <div class="form-row">
@@ -101,7 +101,7 @@ interface Channel {
             }
 
             <div class="form-decoration"></div>
-          </div>
+          </div> -->
 
         </div>
       </div>

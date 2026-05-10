@@ -1,6 +1,10 @@
-:host { display: block; }
+:host {
+  display: block;
+}
 
-main { display: block; }
+main {
+  display: block;
+}
 
 .marquee {
   border-top: 1px solid var(--line);
@@ -21,7 +25,9 @@ main { display: block; }
 }
 
 @keyframes marquee {
-  to { transform: translateX(-50%); }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .marquee span {

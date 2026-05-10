@@ -3,10 +3,13 @@
 .work {
   padding: 3.5rem 0 1.5rem;
   min-height: 100vh;
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
+  background: var(--bg);
+  position: relative;
+  z-index: 2;
 }
 
 .work-head {
@@ -56,10 +59,14 @@
 /* ========= Gallery ========= */
 .gallery-wrap {
   position: relative;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 600px;
+  height: 600px;
+  overflow-x: auto;
+  overflow-y: hidden;
   perspective: 1200px;
+  background: var(--bg);
+  display: block;
+  width: 100%;
 }
 
 .gallery-track {
@@ -67,6 +74,7 @@
   gap: 2rem;
   padding: 0 2.5rem;
   height: 100%;
+  width: 100%;
   cursor: grab;
   will-change: transform;
   align-items: stretch;
@@ -192,13 +200,35 @@
 .gallery-item { cursor: pointer; }
 
 @media (max-width: 900px) {
+  .work {
+    height: auto;
+    padding: 5rem 0;
+  }
   .work-head,
   .gallery-filters,
   .gallery-track {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
   }
-  .gallery-track { gap: 1rem; }
+  .gallery-track { 
+    gap: 1rem; 
+  }
+  .gallery-item {
+    width: 85vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-head {
+    h2 { font-size: 2.5rem; }
+  }
+  .gallery-filters {
+    gap: 0.25rem;
+  }
+  .gallery-filter {
+    padding: 0.4rem 0.8rem;
+    font-size: 8px;
+  }
 }
 
 /* ==========================================================
