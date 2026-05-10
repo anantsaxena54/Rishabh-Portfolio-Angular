@@ -1,101 +1,144 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-loader',
   standalone: true,
-  imports: [DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="loader" [class.done]="done()">
-      <!-- Adobe Rendering Window -->
-      <div class="render-modal">
-        <div class="render-header">
-          <span>Rendering : {{ progress() | number:'1.2-2' }}%</span>
+    <div class="loader" [class.done]="done()" [class.clapping]="clapping()">
+      <div class="loader-grain"></div>
+      <div class="loader-scan"></div>
+
+      <!-- Top slate bar -->
+      <div class="slate-bar">
+        <div class="slate-left">
+          <span class="rec-dot"></span>
+          <span>REC</span>
+          <span class="sep">/</span>
+          <span>{{ timecode() }}</span>
         </div>
-        <div class="render-body">
-          <p class="render-text">Rendering {{ currentPreview() }} of 50 video previews</p>
-          
-          <div class="progress-track">
-            <div class="progress-fill" [style.width.%]="progress()"></div>
+        <div class="slate-right">
+          <span>SCENE 01</span>
+          <span class="sep">/</span>
+          <span>TAKE 01</span>
+          <span class="sep">/</span>
+          <span>MUMBAI · IN</span>
+        </div>
+      </div>
+
+      <!-- Film strip framing -->
+      <div class="film-strip top">
+        @for (i of perfs; track $index) { <span class="perf"></span> }
+      </div>
+
+      <div class="loader-content">
+
+        <!-- ===== Clapperboard ===== -->
+        <div class="clapper" [class.clap]="clapping()">
+          <div class="clapper-arm">
+            <div class="arm-stripes">
+              @for (s of armStripes; track $index) {
+                <span class="stripe" [class.white]="$index % 2 === 0"></span>
+              }
+            </div>
+            <div class="arm-hinge"></div>
           </div>
-          
-          <p class="render-text">Rendering frame {{ currentFrame() }} of 24613</p>
-          <p class="render-text">Estimated time remaining: 00:00:0{{ remainingSeconds() }}</p>
-          
-          <div class="render-details">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-            <span>Render details</span>
-          </div>
-          
-          <div class="render-actions">
-            <button class="btn-cancel" (click)="forceFinish()">Cancel</button>
+
+          <div class="clapper-body">
+            <div class="body-stripes">
+              @for (s of bodyStripes; track $index) {
+                <span class="stripe" [class.white]="$index % 2 === 0"></span>
+              }
+            </div>
+
+            <div class="slate-face">
+              <div class="slate-header">
+                <span>PRODUCTION</span>
+                <span class="sep-line"></span>
+                <span>REEL 2026</span>
+              </div>
+
+              <div class="slate-title">
+                <span class="title-main">Rishabh</span>
+                <span class="title-sub">SAHU</span>
+              </div>
+
+              <div class="slate-grid">
+                <div class="cell"><span class="k">DIR</span><span class="v">R. SAHU</span></div>
+                <div class="cell"><span class="k">CAM</span><span class="v">A</span></div>
+                <div class="cell"><span class="k">ROLL</span><span class="v">001</span></div>
+                <div class="cell"><span class="k">SCENE</span><span class="v">01</span></div>
+                <div class="cell"><span class="k">TAKE</span><span class="v">01</span></div>
+                <div class="cell"><span class="k">FPS</span><span class="v">24</span></div>
+              </div>
+
+              <div class="slate-footer">
+                <span>DATE · {{ dateStr }}</span>
+                <span class="pulse">● SYNC</span>
+              </div>
+            </div>
           </div>
         </div>
+
+      </div>
+
+      <!-- Film strip framing bottom -->
+      <div class="film-strip bottom">
+        @for (i of perfs; track $index) { <span class="perf"></span> }
       </div>
     </div>
   `,
   styleUrl: './loader.component.scss',
 })
 export class LoaderComponent implements AfterViewInit, OnDestroy {
-  protected readonly done = signal(false);
-  protected readonly progress = signal(0);
-  protected readonly currentPreview = signal(0);
-  protected readonly currentFrame = signal(0);
-  protected readonly remainingSeconds = signal(2);
+  protected readonly armStripes = Array.from({ length: 12 });
+  protected readonly bodyStripes = Array.from({ length: 12 });
+  protected readonly perfs = Array.from({ length: 28 });
 
-  private interval?: number;
+  protected readonly done = signal(false);
+  protected readonly clapping = signal(false);
+  protected readonly timecode = signal('00:00:00:00');
+
+  protected readonly dateStr = (() => {
+    const d = new Date();
+    const pad = (v: number) => String(v).padStart(2, '0');
+    return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+  })();
+
+  private tcInterval?: number;
   private timeout?: number;
+  private clapTimeout?: number;
 
   ngAfterViewInit(): void {
-    const totalFrames = 24613;
-    const totalPreviews = 50;
-    const duration = 2000; // 2 seconds loading time
     const start = Date.now();
+    this.tcInterval = window.setInterval(() => {
+      const ms = Date.now() - start;
+      const h = Math.floor(ms / 3_600_000) % 24;
+      const m = Math.floor(ms / 60_000) % 60;
+      const s = Math.floor(ms / 1000) % 60;
+      const f = Math.floor((ms % 1000) / 1000 * 24);
+      const pad = (v: number) => String(v).padStart(2, '0');
+      this.timecode.set(`${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`);
+    }, 41);
 
-    const update = () => {
-      const elapsed = Date.now() - start;
-      const p = Math.min((elapsed / duration) * 100, 100);
-      
-      this.progress.set(p);
-      this.currentFrame.set(Math.floor((p / 100) * totalFrames));
-      this.currentPreview.set(Math.floor((p / 100) * totalPreviews));
-      this.remainingSeconds.set(Math.max(0, Math.ceil((duration - elapsed) / 1000)));
+    const showDone = () => {
+      // Clap! — the board's close animation is the loader's goodbye
+      this.clapTimeout = window.setTimeout(() => this.clapping.set(true), 2000);
 
-      if (p >= 100) {
-        if (this.interval) window.clearInterval(this.interval);
-        this.finish();
-      }
+      // Dismiss after the clap + shake + close sequence resolves
+      this.timeout = window.setTimeout(() => {
+        this.done.set(true);
+        window.dispatchEvent(new CustomEvent('loader:done'));
+      }, 3150);
     };
 
-    const runLoader = () => {
-      this.interval = window.setInterval(update, 30);
-    };
-
-    if (document.readyState === 'complete') {
-      runLoader();
-    } else {
-      window.addEventListener('load', runLoader, { once: true });
-    }
-  }
-
-  forceFinish(): void {
-    if (this.interval) window.clearInterval(this.interval);
-    this.progress.set(100);
-    this.finish();
-  }
-
-  private finish(): void {
-    this.timeout = window.setTimeout(() => {
-      this.done.set(true);
-      window.dispatchEvent(new CustomEvent('loader:done'));
-    }, 500); // 500ms delay after hitting 100%
+    if (document.readyState === 'complete') showDone();
+    else window.addEventListener('load', showDone, { once: true });
   }
 
   ngOnDestroy(): void {
-    if (this.interval) window.clearInterval(this.interval);
+    if (this.tcInterval) window.clearInterval(this.tcInterval);
     if (this.timeout) window.clearTimeout(this.timeout);
+    if (this.clapTimeout) window.clearTimeout(this.clapTimeout);
   }
 }
