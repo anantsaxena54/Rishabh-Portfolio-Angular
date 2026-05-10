@@ -29,19 +29,29 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
         }
       </div>
 
-      <div class="gallery-wrap">
-        <div #track class="gallery-track" [class.dragging]="dragging()">
+      <div class="gallery-wrap cover-flow-wrap">
+        <div class="cover-flow-bg" 
+             [style.background-image]="visibleProjects()[activeIndex()] ? 'url(' + visibleProjects()[activeIndex()].img + ')' : 'none'">
+        </div>
+        <div class="cover-flow-overlay"></div>
+
+        <div #track class="gallery-track cover-flow-track">
           @for (project of visibleProjects(); track project.title; let i = $index) {
-            <div class="gallery-item" data-cursor="View" (click)="openProject(project, i)">
+            <div class="gallery-item cover-flow-item" 
+                 [class.active]="i === activeIndex()"
+                 [style.transform]="getTransform(i)"
+                 [style.zIndex]="getZIndex(i)"
+                 [style.opacity]="getOpacity(i)"
+                 (click)="onItemClick(project, i)">
               <div class="gallery-item-inner">
                 <div class="gallery-item-num">P — {{ paddedIndex(i) }}</div>
                 <img [src]="project.img" 
                      class="gallery-item-visual" 
                      [style.object-position]="project.imgPosition || 'center'"
                      style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
-                <div class="gallery-item-shine"></div>
+                <div class="gallery-item-shine" [style.opacity]="i === activeIndex() ? 0 : 0.5"></div>
               </div>
-              <div class="gallery-item-meta">
+              <div class="gallery-item-meta" [style.opacity]="i === activeIndex() ? 1 : 0">
                 <div>
                   <div class="gallery-item-title"><em>{{ project.title }}</em></div>
                   <div class="gallery-item-tag brand">{{ project.brand }}</div>
@@ -111,7 +121,9 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
 
   protected readonly filters: readonly Filter[] = FILTERS;
   protected readonly activeFilter = signal<Filter['value']>('all');
+  protected readonly activeIndex = signal(0);
   protected readonly dragging = signal(false);
+  protected readonly isMobile = signal(false);
   protected readonly selected = signal<Project | null>(null);
   protected readonly selectedIndex = signal(0);
   protected readonly perfs = Array.from({ length: 24 });
@@ -131,10 +143,17 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   });
 
   openProject(project: Project, index: number): void {
-    if (this.dragging()) return;
     this.selected.set(project);
     this.selectedIndex.set(index);
     document.body.style.overflow = 'hidden';
+  }
+
+  onItemClick(project: Project, index: number): void {
+    if (index === this.activeIndex()) {
+      this.openProject(project, index);
+    } else {
+      this.activeIndex.set(index);
+    }
   }
 
   closeProject(): void {
@@ -156,19 +175,47 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private current = 0;
-  private isDown = false;
-  private startX = 0;
-  private startPos = 0;
-  private cleanups: Array<() => void> = [];
-
   setFilter(value: Filter['value']): void {
     this.activeFilter.set(value);
-    this.current = 0;
+    this.activeIndex.set(0);
     queueMicrotask(() => {
-      const el = this.track().nativeElement;
-      el.style.transform = 'translateX(0)';
+      const wrap = this.track().nativeElement.parentElement;
+      if (wrap) {
+        const offset = wrap.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+      }
     });
+  }
+
+  getTransform(i: number): string {
+    const diff = i - this.activeIndex();
+    if (diff === 0) {
+      return 'translateX(-50%) translateZ(0px) rotateY(0deg) scale(1)';
+    }
+    const sign = Math.sign(diff);
+    const absDiff = Math.abs(diff);
+    
+    const mobile = this.isMobile();
+    const baseOffset = mobile ? 120 : 180;
+    const gap = mobile ? 40 : 70;
+    const zGap = mobile ? 50 : 80;
+    const zBase = mobile ? -150 : -250;
+    const rotation = mobile ? 25 : 35;
+
+    const xOffset = sign * (baseOffset + absDiff * gap); 
+    const zOffset = zBase - (absDiff * zGap);
+    const rotateY = sign * -rotation; 
+    return `translateX(calc(-50% + ${xOffset}px)) translateZ(${zOffset}px) rotateY(${rotateY}deg) scale(0.9)`;
+  }
+
+  getZIndex(i: number): number {
+    const diff = Math.abs(i - this.activeIndex());
+    return 100 - diff;
+  }
+
+  getOpacity(i: number): number {
+    const diff = Math.abs(i - this.activeIndex());
+    return diff > 4 ? 0 : 1; 
   }
 
   categoryLabel(cat: ProjectCategory): string {
@@ -179,93 +226,60 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     return String(i + 1).padStart(2, '0');
   }
 
+  private cleanups: Array<() => void> = [];
+
   ngAfterViewInit(): void {
+    const checkMobile = () => {
+      this.isMobile.set(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    this.cleanups.push(() => window.removeEventListener('resize', checkMobile));
+
     this.zone.runOutsideAngular(() => {
-      this.attachDrag();
-      if (!window.matchMedia('(max-width: 900px)').matches) {
-        this.attachTilt();
-      }
-    });
-  }
+      const wrap = this.track().nativeElement.parentElement!;
+      let isScrolling = false;
 
-  private attachDrag(): void {
-    const track = this.track().nativeElement;
-    const wrap = track.parentElement!;
-    const ring = document.querySelector<HTMLElement>('.cursor-ring');
-
-    const setTransform = () => { track.style.transform = `translateX(${this.current}px)`; };
-
-    const onDown = (e: MouseEvent | TouchEvent) => {
-      this.isDown = true;
-      this.zone.run(() => this.dragging.set(true));
-      ring?.classList.add('drag');
-      this.startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-      this.startPos = this.current;
-    };
-    const onMove = (e: MouseEvent | TouchEvent) => {
-      if (!this.isDown) return;
-      const cx = 'touches' in e ? e.touches[0].clientX : e.clientX;
-      this.current = this.startPos + (cx - this.startX);
-      const max = -(track.scrollWidth - track.clientWidth);
-      this.current = Math.max(max, Math.min(0, this.current));
-      setTransform();
-    };
-    const onUp = () => {
-      this.isDown = false;
-      this.zone.run(() => this.dragging.set(false));
-      ring?.classList.remove('drag');
-    };
-
-    track.addEventListener('mousedown', onDown);
-    track.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    track.addEventListener('touchstart', onDown, { passive: true });
-    track.addEventListener('touchmove', onMove, { passive: true });
-    track.addEventListener('touchend', onUp);
-
-    const onWheel = (e: WheelEvent) => {
-      const max = -(track.scrollWidth - track.clientWidth);
-      this.current -= e.deltaY;
-      this.current = Math.max(max, Math.min(0, this.current));
-      setTransform();
-      e.preventDefault();
-    };
-    wrap.addEventListener('wheel', onWheel, { passive: false });
-
-    this.cleanups.push(
-      () => track.removeEventListener('mousedown', onDown),
-      () => track.removeEventListener('mousemove', onMove),
-      () => window.removeEventListener('mouseup', onUp),
-      () => track.removeEventListener('touchstart', onDown),
-      () => track.removeEventListener('touchmove', onMove),
-      () => track.removeEventListener('touchend', onUp),
-      () => wrap.removeEventListener('wheel', onWheel),
-    );
-  }
-
-  private attachTilt(): void {
-    const onMove = (e: MouseEvent) => {
-      const track = this.track().nativeElement;
-      if (track.classList.contains('dragging')) return;
-      document.querySelectorAll<HTMLElement>('.gallery-item-inner').forEach(el => {
-        const r = el.getBoundingClientRect();
-        if (r.width === 0) return;
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const dx = (e.clientX - cx) / r.width;
-        const dy = (e.clientY - cy) / r.height;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 1.0) {
-          const ry = dx * 12;
-          const rx = -dy * 8;
-          el.style.transform = `perspective(1000px) rotateY(${ry}deg) rotateX(${rx}deg) translateZ(10px)`;
-        } else {
-          el.style.transform = '';
+      const onWheel = (e: WheelEvent) => {
+        e.preventDefault();
+        if (isScrolling) return;
+        
+        const current = this.activeIndex();
+        if (e.deltaY > 0 && current < this.visibleProjects().length - 1) {
+          isScrolling = true;
+          this.zone.run(() => this.activeIndex.set(current + 1));
+          setTimeout(() => isScrolling = false, 400); // Debounce duration matches CSS transition
+        } else if (e.deltaY < 0 && current > 0) {
+          isScrolling = true;
+          this.zone.run(() => this.activeIndex.set(current - 1));
+          setTimeout(() => isScrolling = false, 400);
         }
-      });
-    };
-    document.addEventListener('mousemove', onMove);
-    this.cleanups.push(() => document.removeEventListener('mousemove', onMove));
+      };
+
+      wrap.addEventListener('wheel', onWheel, { passive: false });
+      this.cleanups.push(() => wrap.removeEventListener('wheel', onWheel));
+
+      // Swipe support
+      let touchStartX = 0;
+      const onTouchStart = (e: TouchEvent) => {
+        touchStartX = e.touches[0].clientX;
+      };
+      const onTouchEnd = (e: TouchEvent) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const current = this.activeIndex();
+        if (touchStartX - touchEndX > 50 && current < this.visibleProjects().length - 1) {
+          this.zone.run(() => this.activeIndex.set(current + 1));
+        } else if (touchStartX - touchEndX < -50 && current > 0) {
+          this.zone.run(() => this.activeIndex.set(current - 1));
+        }
+      };
+      wrap.addEventListener('touchstart', onTouchStart, { passive: true });
+      wrap.addEventListener('touchend', onTouchEnd);
+      this.cleanups.push(
+        () => wrap.removeEventListener('touchstart', onTouchStart),
+        () => wrap.removeEventListener('touchend', onTouchEnd)
+      );
+    });
   }
 
   ngOnDestroy(): void {
