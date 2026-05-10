@@ -39,9 +39,14 @@ import { Skill } from '../../core/models/portfolio.models';
                   <span>M</span><span>S</span>
                 </div>
               </div>
-              <div class="track-content">
+              <div class="track-content"
+                   [style.justify-content]="track.justifyContent || 'flex-start'"
+                   [style.gap]="track.gap || '1rem'">
                 <div class="clip" 
                      *ngFor="let skill of track.skills"
+                     [style.width]="skill.width"
+                     [style.flex]="'0 0 ' + skill.width"
+                     [style.marginLeft]="skill.marginLeft || '0'"
                      [class.active]="activeSkill() === skill"
                      (mouseenter)="activeSkill.set(skill)">
                   <div class="clip-inner">
@@ -110,26 +115,24 @@ export class SkillsComponent implements AfterViewInit, OnDestroy {
     { name: 'DaVinci Resolve', icon: 'assets/logos/dr.png' }
   ];
 
-  protected readonly tracks = [
+  protected readonly tracks: Array<{ id: string, justifyContent?: string, gap?: string, skills: any[] }> = [
     { 
       id: 'V1 Visuals', 
+      justifyContent: 'center',
+      gap: '1.5rem',
       skills: [
-        { ...SKILLS[0], tools: ['Sony FX3', 'Sony A7S III'] }, 
-        SKILLS[5]
+        { ...SKILLS[1], tools: ['Premiere Pro', 'DaVinci Resolve', 'After Effects', 'Photoshop'], width: '220px' },
+        { ...SKILLS[2], title: 'VFX', tools: ['After Effects', 'Mocha'], width: '200px' }
       ] 
     },
     { 
-      id: 'V2 Post', 
+      id: 'V2 Post',
+      justifyContent: 'flex-start', 
+      gap: '8px',
       skills: [
-        { ...SKILLS[1], tools: ['Premiere Pro', 'DaVinci Resolve', 'After Effects', 'Photoshop'] }, 
-        { ...SKILLS[3], tools: ['DaVinci Resolve', 'Lightroom'] }
-      ] 
-    },
-    { 
-      id: 'V3 Tech', 
-      skills: [
-        { ...SKILLS[2], title: 'VFX', tools: ['After Effects', 'Mocha'] }, 
-        SKILLS[4]
+        { ...SKILLS[0], tools: ['Sony FX3', 'Sony A7S III'], width: '280px' }, 
+        { ...SKILLS[3], tools: ['DaVinci Resolve', 'Lightroom'], width: '160px' },
+        { ...SKILLS[4], width: '190px' }
       ] 
     }
   ];

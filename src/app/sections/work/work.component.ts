@@ -1,5 +1,4 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, NgZone, OnDestroy, computed, inject, signal, viewChild } from '@angular/core';
-import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { CATEGORY_LABELS, FILTERS, PROJECTS } from '../../core/data/portfolio.data';
 import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.models';
 
@@ -36,9 +35,10 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
             <div class="gallery-item" data-cursor="View" (click)="openProject(project, i)">
               <div class="gallery-item-inner">
                 <div class="gallery-item-num">P — {{ paddedIndex(i) }}</div>
-                <div class="gallery-item-visual" 
-                     [style.background-image]="bgImg(project.img)"
-                     [style.background-position]="project.imgPosition || 'center'"></div>
+                <img [src]="project.img" 
+                     class="gallery-item-visual" 
+                     [style.object-position]="project.imgPosition || 'center'"
+                     style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
                 <div class="gallery-item-shine"></div>
               </div>
               <div class="gallery-item-meta">
@@ -107,12 +107,7 @@ import { Filter, Project, ProjectCategory } from '../../core/models/portfolio.mo
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {
   private readonly zone = inject(NgZone);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly track = viewChild.required<ElementRef<HTMLDivElement>>('track');
-
-  bgImg(url: string): SafeStyle {
-    return this.sanitizer.bypassSecurityTrustStyle(`url('${url}')`);
-  }
 
   protected readonly filters: readonly Filter[] = FILTERS;
   protected readonly activeFilter = signal<Filter['value']>('all');
@@ -122,9 +117,17 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   protected readonly perfs = Array.from({ length: 24 });
   protected readonly playerPerfs = Array.from({ length: 32 });
 
+  private readonly shuffledAllProjects: readonly Project[] = (() => {
+    const aiProjects = PROJECTS.filter(p => p.cat === 'ai');
+    const otherProjects = PROJECTS.filter(p => p.cat !== 'ai');
+    // Shuffle non-AI projects
+    const shuffled = [...otherProjects].sort(() => Math.random() - 0.5);
+    return [...shuffled, ...aiProjects];
+  })();
+
   protected readonly visibleProjects = computed<readonly Project[]>(() => {
     const f = this.activeFilter();
-    return f === 'all' ? PROJECTS : PROJECTS.filter(p => p.cat === f);
+    return f === 'all' ? this.shuffledAllProjects : PROJECTS.filter(p => p.cat === f);
   });
 
   openProject(project: Project, index: number): void {
@@ -148,8 +151,8 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     switch (cat) {
       case 'cine': return 'Cinematographer';
       case 'edit': return 'Editor';
-      case 'vfx':  return 'VFX Artist';
-      case 'ai':   return 'AI Integration';
+      case 'vfx': return 'VFX Artist';
+      case 'ai': return 'AI Integration';
     }
   }
 

@@ -14,9 +14,7 @@ function svgThumb(hue1: string, hue2: string, pattern: string): string {
     blur: `<radialGradient id="g" cx="30%" cy="40%"><stop offset="0%" stop-color="${hue1}" stop-opacity=".9"/><stop offset="100%" stop-color="%230a0908"/></radialGradient><radialGradient id="g2" cx="70%" cy="70%"><stop offset="0%" stop-color="${hue2}" stop-opacity=".6"/><stop offset="100%" stop-color="%230a0908" stop-opacity="0"/></radialGradient><rect width="800" height="600" fill="url(%23g)"/><rect width="800" height="600" fill="url(%23g2)"/>`,
   };
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">${patterns[pattern] ?? patterns['lens']}</svg>`;
-  // Use base64 encoding to avoid quote-in-quote issues in CSS url() contexts
-  const b64 = btoa(unescape(encodeURIComponent(svg)));
-  return `data:image/svg+xml;base64,${b64}`;
+  return `data:image/svg+xml;utf8,${svg}`;
 }
 
 // ==========================================================
