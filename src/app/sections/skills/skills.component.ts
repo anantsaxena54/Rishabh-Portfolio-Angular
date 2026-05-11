@@ -109,10 +109,11 @@ export class SkillsComponent implements AfterViewInit, OnDestroy {
   private listener?: () => void;
 
   protected readonly displayTools = [
-    { name: 'After Effects', icon: 'assets/logos/ae.png' },
-    { name: 'Premiere Pro', icon: 'assets/logos/pr.png' },
-    { name: 'Photoshop', icon: 'assets/logos/ps.png' },
-    { name: 'DaVinci Resolve', icon: 'assets/logos/dr.png' }
+    { name: 'Gear 1', icon: 'assets/logos/logo/logo1.png' },
+    { name: 'Gear 2', icon: 'assets/logos/logo/logo2.png' },
+    { name: 'Gear 3', icon: 'assets/logos/logo/logo3.png' },
+    { name: 'Gear 4', icon: 'assets/logos/logo/logo4.png' },
+    { name: 'Gear 5', icon: 'assets/logos/logo/logo5.png' }
   ];
 
   protected readonly tracks: Array<{ id: string, justifyContent?: string, gap?: string, skills: any[] }> = [

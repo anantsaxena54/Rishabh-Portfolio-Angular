@@ -178,13 +178,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   setFilter(value: Filter['value']): void {
     this.activeFilter.set(value);
     this.activeIndex.set(0);
-    queueMicrotask(() => {
-      const wrap = this.track().nativeElement.parentElement;
-      if (wrap) {
-        const offset = wrap.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top: offset, behavior: 'smooth' });
-      }
-    });
   }
 
   getTransform(i: number): string {

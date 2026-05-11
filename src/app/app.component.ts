@@ -56,7 +56,6 @@ import { ContactComponent } from './sections/contact/contact.component';
       <app-work />
       <app-contact />
       <footer>
-        <span>© 2026 Rishabh Sahu — Made in Mumbai</span>
         <span>19.0760° N / 72.8777° E</span>
         <span>Built with craft, not templates</span>
       </footer>

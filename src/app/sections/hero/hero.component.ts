@@ -1,8 +1,10 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="hero" id="hero">
@@ -39,7 +41,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, viewChil
               <div class="hero-background">
                 <div class="bg-item">
                   <span class="bg-label">2020 — 2022</span>
-                  <div class="bg-title">Bachelor of arts in multimedia and mass communication — St. Andrew's College</div>
+                  <div class="bg-title">Bachelor of arts in multimedia and mass communication <br> St. Andrew's College</div>
                 </div>
                 <div class="bg-item">
                   <span class="bg-label">2021 — 2022</span>
@@ -62,11 +64,11 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, viewChil
   styleUrl: './hero.component.scss',
 })
 export class HeroComponent implements AfterViewInit {
-  private readonly heroVideo  = viewChild.required<ElementRef<HTMLVideoElement>>('heroVideo');
-  private readonly line1      = viewChild.required<ElementRef<HTMLSpanElement>>('line1');
-  private readonly line2      = viewChild.required<ElementRef<HTMLSpanElement>>('line2');
+  private readonly heroVideo = viewChild.required<ElementRef<HTMLVideoElement>>('heroVideo');
+  private readonly line1 = viewChild.required<ElementRef<HTMLSpanElement>>('line1');
+  private readonly line2 = viewChild.required<ElementRef<HTMLSpanElement>>('line2');
   private readonly scriptLine = viewChild.required<ElementRef<HTMLSpanElement>>('scriptLine');
-  private readonly catchphrase= viewChild.required<ElementRef<HTMLParagraphElement>>('catchphrase');
+  private readonly catchphrase = viewChild.required<ElementRef<HTMLParagraphElement>>('catchphrase');
 
   ngAfterViewInit(): void {
     const video = this.heroVideo().nativeElement;
@@ -109,15 +111,15 @@ export class HeroComponent implements AfterViewInit {
       this.catchphrase().nativeElement,
     ];
     spans.forEach((s, i) => {
-      s.style.transform  = 'translateY(110%) rotate(2deg)';
-      s.style.display    = 'inline-block';
-      s.style.opacity    = '0';
+      s.style.transform = 'translateY(110%) rotate(2deg)';
+      s.style.display = 'inline-block';
+      s.style.opacity = '0';
       s.style.transition = `transform 1.2s ${i * 0.15 + 2.8}s var(--ease), opacity 1.2s ${i * 0.15 + 2.8}s var(--ease)`;
     });
     const run = () => {
       setTimeout(() => spans.forEach(s => {
         s.style.transform = 'translateY(0) rotate(0)';
-        s.style.opacity   = '1';
+        s.style.opacity = '1';
       }), 2400);
     };
     if (document.readyState === 'complete') run();
